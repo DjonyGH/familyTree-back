@@ -5,7 +5,7 @@ import { CreateOrUpdateRoleDto } from './dto/createOrUpdate.role.dto';
 import { RoleModel } from './roles.model';
 
 @Injectable()
-export class RolesService {
+export class RoleService {
   constructor(
     @InjectModel(RoleModel) private readonly roleModel: ModelType<RoleModel>,
   ) {}
@@ -16,8 +16,8 @@ export class RolesService {
     return this.roleModel.create(dto);
   }
 
-  async findRole(name: string): Promise<DocumentType<RoleModel> | null> {
-    return this.roleModel.findOne({ name });
+  async getRoleById(id: string): Promise<DocumentType<RoleModel> | null> {
+    return this.roleModel.findById(id);
   }
 
   async updateRole(dto: CreateOrUpdateRoleDto) {

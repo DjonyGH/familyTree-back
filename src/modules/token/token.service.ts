@@ -31,6 +31,7 @@ export class TokenService {
       id: user.id,
       login: user.login,
       name: user.name,
+      ownerId: user.ownerId,
       isblocked: user.isBlocked,
     };
     return this.jwtService.signAsync(payload);
@@ -43,6 +44,7 @@ export class TokenService {
     const refreshToken = await this.createRefreshToken(user, expiresIn);
     const payload = {
       login: user.login,
+      ownerId: user.ownerId,
       isblocked: user.isBlocked,
     };
     return this.jwtService.signAsync(payload, {

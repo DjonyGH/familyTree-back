@@ -7,6 +7,7 @@ import { USER_NOT_AUTH } from 'src/errors/error.consts';
 declare module 'express-session' {
   interface Session {
     userId: string;
+    ownerId: string;
   }
 }
 
@@ -21,6 +22,7 @@ export function user(req: Request, res: Response, next: NextFunction) {
     try {
       const user = jwtService.verify(token);
       req.session.userId = user.id;
+      req.session.ownerId = user.ownerId;
     } catch (error) {
       throw new HttpException(USER_NOT_AUTH, HttpStatus.NOT_FOUND);
     }

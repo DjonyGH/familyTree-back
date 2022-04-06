@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   Query,
   Session,
@@ -27,15 +28,16 @@ export class UserController {
     return this.userSevice.createUser(dto);
   }
 
-  @Get()
+  @Get(':id')
   @UseGuards(JWTGuard)
-  async findUser(@Query('login') login: string) {
-    const user = await this.userSevice.findUser(login);
-    if (!user) {
-      throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-    } else {
-      return user;
-    }
+  async getUser(
+    @Param('id') id: string,
+    @Session() session: Record<string, any>,
+  ) {
+    const ownerId = session.ownerId;
+    console.log('id', id);
+
+    return this.userSevice.getUserById(id, ownerId);
   }
 
   @Post('set-password')

@@ -1,7 +1,8 @@
 import { prop } from '@typegoose/typegoose';
-import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
+import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
+import { BaseWithOwnerId } from 'src/types';
 
-export interface RoleModel extends Base {}
+export interface RoleModel extends BaseWithOwnerId {}
 
 export class RoleModel extends TimeStamps {
   @prop({ required: true })
@@ -9,4 +10,19 @@ export class RoleModel extends TimeStamps {
 
   @prop()
   description?: string;
+
+  @prop({ required: true, default: false })
+  administrationPermission: boolean;
+
+  @prop({ required: true, default: false })
+  operationPermission: boolean;
+
+  @prop({ required: true, default: false })
+  billingPermission: boolean;
+
+  @prop({ required: true, default: false })
+  isOwner: boolean;
+
+  @prop({ required: true })
+  ownerId: string;
 }

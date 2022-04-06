@@ -1,10 +1,10 @@
 import { Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { RolesService } from './roles.service';
+import { RoleService } from './roles.service';
 import { JWTGuard } from 'src/jwt/jwt.guard';
 
 @Controller('roles')
-export class RolesController {
-  constructor(private readonly rolesSevice: RolesService) {}
+export class RoleController {
+  constructor(private readonly roleSevice: RoleService) {}
 
   @Post()
   async createRoles() {}

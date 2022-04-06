@@ -1,13 +1,12 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { MyJwtModule } from 'src/jwt/myJwt.module';
-import { TokenModule } from '../token/token.module';
-import { RolesController } from './roles.controller';
+import { RoleController } from './roles.controller';
 import { RoleModel } from './roles.model';
-import { RolesService } from './roles.service';
+import { RoleService } from './roles.service';
 
 @Module({
-  controllers: [RolesController],
+  controllers: [RoleController],
   imports: [
     TypegooseModule.forFeature([
       {
@@ -19,7 +18,7 @@ import { RolesService } from './roles.service';
     ]),
     MyJwtModule,
   ],
-  providers: [RolesService],
-  exports: [RolesService],
+  providers: [RoleService],
+  exports: [RoleService],
 })
-export class RolesModule {}
+export class RoleModule {}

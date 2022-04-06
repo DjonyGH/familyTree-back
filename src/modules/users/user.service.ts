@@ -6,11 +6,17 @@ import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { USER_NOT_FOUND } from '../../errors/error.consts';
 import { UserModel } from './user.model';
+import { IUserResponse } from './types';
+import { RoleService } from '../roles/roles.service';
+import { getObjectIdFromString } from 'src/utils/getObjectIdFromString';
+import { checkId } from 'src/utils/checkId';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(UserModel) private readonly userModel: ModelType<UserModel>,
+    @InjectModel(UserModel)
+    private readonly userModel: ModelType<UserModel>,
+    private readonly roleService: RoleService,
   ) {}
 
   async createUser(dto: CreateUserDto): Promise<DocumentType<UserModel>> {
@@ -19,6 +25,29 @@ export class UserService {
 
   async findUser(login: string): Promise<DocumentType<UserModel> | null> {
     return this.userModel.findOne({ login });
+  }
+
+  async getUserById(
+    id: string,
+    ownerId: string,
+  ): Promise<IUserResponse | null> {
+    if (checkId(id)) {
+      const user = await this.userModel.findOne({
+        _id: getObjectIdFromString(id),
+        ownerId,
+      });
+      if (user) {
+        const role = await this.roleService.getRoleById(user.roleId);
+        user.password = undefined;
+        user.ownerId = undefined;
+        user.roleId = undefined;
+        return {
+          ...user.toObject(),
+          role,
+        };
+      }
+    }
+    throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
   }
 
   async setPassword({ userId, password }) {

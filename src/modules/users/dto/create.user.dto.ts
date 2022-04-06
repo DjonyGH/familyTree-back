@@ -1,9 +1,9 @@
-import { IsPhoneNumber, Length } from 'class-validator';
+import { Length } from 'class-validator';
 
 export class CreateUserDto {
-  @IsPhoneNumber('RU', { message: 'Это не телефонный номер' })
+  @Length(3, 30, { message: 'Логин должен быть от 3 до 30 символов' })
   login: string;
 
-  @Length(6, 12, { message: 'Пароль должен быть от 6 до 12 символов' })
+  @Length(4, 12, { message: 'Пароль должен быть от 4 до 12 символов' })
   password: string;
 }
