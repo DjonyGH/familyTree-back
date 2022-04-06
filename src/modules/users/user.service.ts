@@ -6,7 +6,7 @@ import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { USER_NOT_FOUND } from '../../errors/error.consts';
 import { UserModel } from './user.model';
-import { IUserResponse } from './types';
+import { IUserResponse, TPermission } from './types';
 import { RoleService } from '../roles/roles.service';
 import { getObjectIdFromString } from 'src/utils/getObjectIdFromString';
 import { checkId } from 'src/utils/checkId';
@@ -48,6 +48,15 @@ export class UserService {
       }
     }
     throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+  }
+
+  async checkPermissionByUser(
+    userId: string,
+    ownerId: string,
+    permission: TPermission,
+  ): Promise<boolean> {
+    const user = await this.getUserById(userId, ownerId);
+    return !!user?.role?.[permission];
   }
 
   async setPassword({ userId, password }) {

@@ -15,4 +15,5 @@ export const OREDER_CANCEL_ERROR = 'Ошибка отмены записи';
 export const OREDER_COMPLET_NO_ACTIVE_ERROR =
   'Можно завершить только активную запись';
 export const OREDER_COMPLET_ERROR = 'Ошибка завершения записи';
+export const FORBIDDEN = 'Нет доступа к данной операции';
 // export const ADDSERVICE_ERROR = 'Ошибка создания дополнительной услуги';

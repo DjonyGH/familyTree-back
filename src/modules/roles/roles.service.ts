@@ -7,13 +7,16 @@ import { RoleModel } from './roles.model';
 @Injectable()
 export class RoleService {
   constructor(
-    @InjectModel(RoleModel) private readonly roleModel: ModelType<RoleModel>,
+    @InjectModel(RoleModel)
+    private readonly roleModel: ModelType<RoleModel>,
   ) {}
 
   async createRole(
     dto: CreateOrUpdateRoleDto,
+    ownerId: string,
   ): Promise<DocumentType<RoleModel>> {
-    return this.roleModel.create(dto);
+    const role = { ...dto, isOwner: false, ownerId };
+    return this.roleModel.create(role);
   }
 
   async getRoleById(id: string): Promise<DocumentType<RoleModel> | null> {

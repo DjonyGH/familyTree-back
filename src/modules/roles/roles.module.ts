@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { MyJwtModule } from 'src/jwt/myJwt.module';
+import { UserModule } from '../users/user.module';
 import { RoleController } from './roles.controller';
 import { RoleModel } from './roles.model';
 import { RoleService } from './roles.service';
@@ -16,6 +17,7 @@ import { RoleService } from './roles.service';
         },
       },
     ]),
+    forwardRef(() => UserModule),
     MyJwtModule,
   ],
   providers: [RoleService],

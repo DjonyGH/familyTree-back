@@ -5,3 +5,8 @@ export interface IUserResponse
   extends Omit<UserModel, 'password' | 'ownerId' | 'roleId'> {
   role: RoleModel;
 }
+
+export type TPermission =
+  | 'administrationPermission'
+  | 'operationPermission'
+  | 'billingPermission';

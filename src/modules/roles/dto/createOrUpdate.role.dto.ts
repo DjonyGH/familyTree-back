@@ -7,4 +7,10 @@ export class CreateOrUpdateRoleDto {
   name: string;
 
   description?: string;
+
+  administrationPermission: boolean;
+
+  operationPermission: boolean;
+
+  billingPermission: boolean;
 }

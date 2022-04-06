@@ -2,19 +2,14 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
-  HttpException,
-  HttpStatus,
   Param,
   Post,
-  Query,
   Session,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create.user.dto';
 import { SetPasswordUserDto } from './dto/setPassword.user.dto';
-import { USER_NOT_FOUND } from '../../errors/error.consts';
 import { UserService } from './user.service';
 import { JWTGuard } from 'src/jwt/jwt.guard';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
@@ -35,8 +30,6 @@ export class UserController {
     @Session() session: Record<string, any>,
   ) {
     const ownerId = session.ownerId;
-    console.log('id', id);
-
     return this.userSevice.getUserById(id, ownerId);
   }
 
