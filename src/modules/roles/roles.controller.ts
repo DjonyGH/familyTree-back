@@ -4,6 +4,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   Session,
   UseGuards,
@@ -22,6 +23,45 @@ export class RoleController {
     private readonly roleSevice: RoleService,
     private readonly userSevice: UserService,
   ) {}
+
+  @Get()
+  @UseGuards(JWTGuard)
+  @UseGuards(JWTGuard)
+  async getAllRoles(@Session() session: Record<string, any>) {
+    const { userId, ownerId } = session;
+    if (
+      await this.userSevice.checkPermissionByUser(
+        userId,
+        ownerId,
+        'administrationPermission',
+      )
+    ) {
+      return this.roleSevice.getAllRoles(ownerId);
+    } else {
+      throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
+    }
+  }
+
+  @Get(':id')
+  @UseGuards(JWTGuard)
+  @UseGuards(JWTGuard)
+  async getRoleById(
+    @Param('id') id: string,
+    @Session() session: Record<string, any>,
+  ) {
+    const { userId, ownerId } = session;
+    if (
+      await this.userSevice.checkPermissionByUser(
+        userId,
+        ownerId,
+        'administrationPermission',
+      )
+    ) {
+      return this.roleSevice.getRoleById(id);
+    } else {
+      throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
+    }
+  }
 
   @Post()
   @UseGuards(JWTGuard)
@@ -43,8 +83,4 @@ export class RoleController {
       throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
     }
   }
-
-  @Get()
-  @UseGuards(JWTGuard)
-  async findRoles() {}
 }
