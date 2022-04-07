@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Session,
@@ -13,6 +15,7 @@ import { SetPasswordUserDto } from './dto/setPassword.user.dto';
 import { UserService } from './user.service';
 import { JWTGuard } from 'src/jwt/jwt.guard';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
+import { FORBIDDEN } from 'src/errors/error.consts';
 
 @Controller('users')
 export class UserController {
@@ -29,8 +32,17 @@ export class UserController {
     @Param('id') id: string,
     @Session() session: Record<string, any>,
   ) {
-    const ownerId = session.ownerId;
-    return this.userSevice.getUserById(id, ownerId);
+    const { userId } = session;
+    if (
+      await this.userSevice.checkPermissionByUser(
+        userId,
+        'administrationPermission',
+      )
+    ) {
+      return this.userSevice.getUserById(id);
+    } else {
+      throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
+    }
   }
 
   @Post('set-password')

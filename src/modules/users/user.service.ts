@@ -27,35 +27,26 @@ export class UserService {
     return this.userModel.findOne({ login });
   }
 
-  async getUserById(
-    id: string,
-    ownerId: string,
-  ): Promise<IUserResponse | null> {
-    if (checkId(id)) {
-      const user = await this.userModel.findOne({
-        _id: getObjectIdFromString(id),
-        ownerId,
-      });
-      if (user) {
-        const role = await this.roleService.getRoleById(user.roleId);
-        user.password = undefined;
-        user.ownerId = undefined;
-        user.roleId = undefined;
-        return {
-          ...user.toObject(),
-          role,
-        };
-      }
+  async getUserById(id: string): Promise<IUserResponse | null> {
+    const user = await this.userModel.findById(id);
+    if (user) {
+      const role = await this.roleService.getRoleById(user.roleId);
+      user.password = undefined;
+      user.ownerId = undefined;
+      user.roleId = undefined;
+      return {
+        ...user.toObject(),
+        role,
+      };
     }
     throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
   }
 
   async checkPermissionByUser(
     userId: string,
-    ownerId: string,
     permission: TPermission,
   ): Promise<boolean> {
-    const user = await this.getUserById(userId, ownerId);
+    const user = await this.getUserById(userId);
     return !!user?.role?.[permission];
   }
 

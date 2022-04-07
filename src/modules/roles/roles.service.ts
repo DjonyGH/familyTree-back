@@ -3,8 +3,11 @@ import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
 import { InjectModel } from 'nestjs-typegoose';
 import {
   ERROR_OF_ROLE_DELETION,
+  ERROR_OF_ROLE_UPDATE,
   ROLE_NOT_FOUND,
 } from 'src/errors/error.consts';
+import { checkId } from 'src/utils/checkId';
+import { getObjectIdFromString } from 'src/utils/getObjectIdFromString';
 import { CreateOrUpdateRoleDto } from './dto/createOrUpdate.role.dto';
 import { RoleModel } from './roles.model';
 
@@ -33,9 +36,19 @@ export class RoleService {
     return this.roleModel.create(role);
   }
 
-  // async updateRole(dto: CreateOrUpdateRoleDto) {
-  //   return this.roleModel.updateOne({ name: dto.name }, dto);
-  // }
+  async updateRole(
+    id: string,
+    dto: CreateOrUpdateRoleDto,
+  ): Promise<DocumentType<RoleModel>> {
+    const role = { ...dto, isOwner: false };
+    const updatedRole = await this.roleModel.findByIdAndUpdate(id, role, {
+      new: true,
+    });
+
+    if (updatedRole) return updatedRole;
+
+    throw new HttpException(ERROR_OF_ROLE_UPDATE, HttpStatus.NOT_FOUND);
+  }
 
   async deleteRole(id: string) {
     const deletedRole = await this.roleModel.findByIdAndRemove(id);

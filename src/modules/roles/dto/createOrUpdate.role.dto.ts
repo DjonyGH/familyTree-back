@@ -1,4 +1,4 @@
-import { Length } from 'class-validator';
+import { IsBoolean, Length } from 'class-validator';
 
 export class CreateOrUpdateRoleDto {
   @Length(2, 50, {
@@ -8,9 +8,12 @@ export class CreateOrUpdateRoleDto {
 
   description?: string;
 
+  @IsBoolean()
   administrationPermission: boolean;
 
+  @IsBoolean()
   operationPermission: boolean;
 
+  @IsBoolean()
   billingPermission: boolean;
 }

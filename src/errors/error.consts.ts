@@ -5,6 +5,7 @@ export const USER_NOT_AUTH = 'Пользователь не авторизова
 // ROLES
 export const ROLE_NOT_FOUND = 'Роль не найдена';
 export const ERROR_OF_ROLE_DELETION = 'Ошибка удаления роли';
+export const ERROR_OF_ROLE_UPDATE = 'Ошибка обновления роли';
 
 // AUTH
 export const LOGIN_OR_PASSWORD_ERROR = 'Неверный логин или пароль';

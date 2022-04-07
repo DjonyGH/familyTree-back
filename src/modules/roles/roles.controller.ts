@@ -7,13 +7,14 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Session,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { RoleService } from './roles.service';
 import { JWTGuard } from 'src/jwt/jwt.guard';
-import { ValidationPipe } from 'src/pipes/validation.pipe';
+// import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { CreateOrUpdateRoleDto } from './dto/createOrUpdate.role.dto';
 import { UserService } from '../users/user.service';
 import { FORBIDDEN } from 'src/errors/error.consts';
@@ -33,7 +34,6 @@ export class RoleController {
     if (
       await this.userSevice.checkPermissionByUser(
         userId,
-        ownerId,
         'administrationPermission',
       )
     ) {
@@ -50,11 +50,10 @@ export class RoleController {
     @Param('id') id: string,
     @Session() session: Record<string, any>,
   ) {
-    const { userId, ownerId } = session;
+    const { userId } = session;
     if (
       await this.userSevice.checkPermissionByUser(
         userId,
-        ownerId,
         'administrationPermission',
       )
     ) {
@@ -66,7 +65,7 @@ export class RoleController {
 
   @Post()
   @UseGuards(JWTGuard)
-  @UsePipes(ValidationPipe)
+  // @UsePipes(ValidationPipe)
   async createRole(
     @Body() dto: CreateOrUpdateRoleDto,
     @Session() session: Record<string, any>,
@@ -75,11 +74,31 @@ export class RoleController {
     if (
       await this.userSevice.checkPermissionByUser(
         userId,
-        ownerId,
         'administrationPermission',
       )
     ) {
       return this.roleSevice.createRole(dto, ownerId);
+    } else {
+      throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
+    }
+  }
+
+  @Put(':id')
+  @UseGuards(JWTGuard)
+  // @UsePipes(ValidationPipe)
+  async updateRole(
+    @Param('id') id: string,
+    @Body() dto: CreateOrUpdateRoleDto,
+    @Session() session: Record<string, any>,
+  ) {
+    const { userId } = session;
+    if (
+      await this.userSevice.checkPermissionByUser(
+        userId,
+        'administrationPermission',
+      )
+    ) {
+      return this.roleSevice.updateRole(id, dto);
     } else {
       throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
     }
@@ -91,11 +110,10 @@ export class RoleController {
     @Param('id') id: string,
     @Session() session: Record<string, any>,
   ) {
-    const { userId, ownerId } = session;
+    const { userId } = session;
     if (
       await this.userSevice.checkPermissionByUser(
         userId,
-        ownerId,
         'administrationPermission',
       )
     ) {
