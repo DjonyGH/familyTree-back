@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -79,6 +80,26 @@ export class RoleController {
       )
     ) {
       return this.roleSevice.createRole(dto, ownerId);
+    } else {
+      throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
+    }
+  }
+
+  @Delete(':id')
+  @UseGuards(JWTGuard)
+  async deleteRole(
+    @Param('id') id: string,
+    @Session() session: Record<string, any>,
+  ) {
+    const { userId, ownerId } = session;
+    if (
+      await this.userSevice.checkPermissionByUser(
+        userId,
+        ownerId,
+        'administrationPermission',
+      )
+    ) {
+      return this.roleSevice.deleteRole(id);
     } else {
       throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
     }

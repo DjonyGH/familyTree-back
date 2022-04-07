@@ -1,7 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
 import { InjectModel } from 'nestjs-typegoose';
-import { ROLE_NOT_FOUND } from 'src/errors/error.consts';
+import {
+  ERROR_OF_ROLE_DELETION,
+  ROLE_NOT_FOUND,
+} from 'src/errors/error.consts';
 import { CreateOrUpdateRoleDto } from './dto/createOrUpdate.role.dto';
 import { RoleModel } from './roles.model';
 
@@ -30,7 +33,13 @@ export class RoleService {
     return this.roleModel.create(role);
   }
 
-  async updateRole(dto: CreateOrUpdateRoleDto) {
-    return this.roleModel.updateOne({ name: dto.name }, dto);
+  // async updateRole(dto: CreateOrUpdateRoleDto) {
+  //   return this.roleModel.updateOne({ name: dto.name }, dto);
+  // }
+
+  async deleteRole(id: string) {
+    const deletedRole = await this.roleModel.findByIdAndRemove(id);
+    if (deletedRole) return deletedRole;
+    throw new HttpException(ERROR_OF_ROLE_DELETION, HttpStatus.NOT_FOUND);
   }
 }
