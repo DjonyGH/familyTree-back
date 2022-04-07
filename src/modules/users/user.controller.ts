@@ -33,16 +33,11 @@ export class UserController {
     @Session() session: Record<string, any>,
   ) {
     const { userId } = session;
-    if (
-      await this.userSevice.checkPermissionByUser(
-        userId,
-        'administrationPermission',
-      )
-    ) {
-      return this.userSevice.getUserById(id);
-    } else {
-      throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
-    }
+    return await this.userSevice.execAfterUserCheckPermission(
+      userId,
+      'administrationPermission',
+      this.userSevice.getUserById(id),
+    );
   }
 
   @Post('set-password')

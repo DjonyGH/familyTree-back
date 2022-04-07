@@ -30,16 +30,11 @@ export class RoleController {
   @UseGuards(JWTGuard)
   async getAllRoles(@Session() session: Record<string, any>) {
     const { userId, ownerId } = session;
-    if (
-      await this.userSevice.checkPermissionByUser(
-        userId,
-        'administrationPermission',
-      )
-    ) {
-      return this.roleSevice.getAllRoles(ownerId);
-    } else {
-      handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
-    }
+    return await this.userSevice.execAfterUserCheckPermission(
+      userId,
+      'administrationPermission',
+      this.roleSevice.getAllRoles(ownerId),
+    );
   }
 
   @Get(':id')
@@ -50,16 +45,11 @@ export class RoleController {
     @Session() session: Record<string, any>,
   ) {
     const { userId } = session;
-    if (
-      await this.userSevice.checkPermissionByUser(
-        userId,
-        'administrationPermission',
-      )
-    ) {
-      return this.roleSevice.getRoleById(id);
-    } else {
-      handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
-    }
+    return await this.userSevice.execAfterUserCheckPermission(
+      userId,
+      'administrationPermission',
+      this.roleSevice.getRoleById(id),
+    );
   }
 
   @Post()
@@ -69,16 +59,11 @@ export class RoleController {
     @Session() session: Record<string, any>,
   ) {
     const { userId, ownerId } = session;
-    if (
-      await this.userSevice.checkPermissionByUser(
-        userId,
-        'administrationPermission',
-      )
-    ) {
-      return this.roleSevice.createRole(dto, ownerId);
-    } else {
-      handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
-    }
+    return await this.userSevice.execAfterUserCheckPermission(
+      userId,
+      'administrationPermission',
+      this.roleSevice.createRole(dto, ownerId),
+    );
   }
 
   @Put(':id')
@@ -89,16 +74,11 @@ export class RoleController {
     @Session() session: Record<string, any>,
   ) {
     const { userId } = session;
-    if (
-      await this.userSevice.checkPermissionByUser(
-        userId,
-        'administrationPermission',
-      )
-    ) {
-      return this.roleSevice.updateRole(id, dto);
-    } else {
-      handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
-    }
+    return await this.userSevice.execAfterUserCheckPermission(
+      userId,
+      'administrationPermission',
+      this.roleSevice.updateRole(id, dto),
+    );
   }
 
   @Delete(':id')

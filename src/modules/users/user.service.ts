@@ -4,7 +4,7 @@ import { genSaltSync, hashSync } from 'bcrypt';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
-import { USER_NOT_FOUND } from '../../errors/error.consts';
+import { FORBIDDEN, USER_NOT_FOUND } from '../../errors/error.consts';
 import { UserModel } from './user.model';
 import { IUserResponse, TPermission } from './types';
 import { RoleService } from '../roles/roles.service';
@@ -49,6 +49,19 @@ export class UserService {
   ): Promise<boolean> {
     const user = await this.getUserById(userId);
     return !!user?.role?.[permission];
+  }
+
+  async execAfterUserCheckPermission(
+    userId: string,
+    permission: TPermission,
+    action,
+  ) {
+    const user = await this.getUserById(userId);
+    if (user?.role?.[permission]) {
+      return action;
+    } else {
+      handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
+    }
   }
 
   async setPassword({ userId, password }) {
