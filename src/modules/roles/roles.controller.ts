@@ -10,14 +10,13 @@ import {
   Put,
   Session,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
 import { RoleService } from './roles.service';
 import { JWTGuard } from 'src/jwt/jwt.guard';
-// import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { CreateOrUpdateRoleDto } from './dto/createOrUpdate.role.dto';
 import { UserService } from '../users/user.service';
 import { FORBIDDEN } from 'src/errors/error.consts';
+import { handleError } from 'src/utils/handleError';
 
 @Controller('roles')
 export class RoleController {
@@ -39,7 +38,7 @@ export class RoleController {
     ) {
       return this.roleSevice.getAllRoles(ownerId);
     } else {
-      throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
+      handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
     }
   }
 
@@ -59,13 +58,12 @@ export class RoleController {
     ) {
       return this.roleSevice.getRoleById(id);
     } else {
-      throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
+      handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
     }
   }
 
   @Post()
   @UseGuards(JWTGuard)
-  // @UsePipes(ValidationPipe)
   async createRole(
     @Body() dto: CreateOrUpdateRoleDto,
     @Session() session: Record<string, any>,
@@ -79,13 +77,12 @@ export class RoleController {
     ) {
       return this.roleSevice.createRole(dto, ownerId);
     } else {
-      throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
+      handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
     }
   }
 
   @Put(':id')
   @UseGuards(JWTGuard)
-  // @UsePipes(ValidationPipe)
   async updateRole(
     @Param('id') id: string,
     @Body() dto: CreateOrUpdateRoleDto,
@@ -100,7 +97,7 @@ export class RoleController {
     ) {
       return this.roleSevice.updateRole(id, dto);
     } else {
-      throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
+      handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
     }
   }
 
@@ -119,7 +116,7 @@ export class RoleController {
     ) {
       return this.roleSevice.deleteRole(id);
     } else {
-      throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
+      handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
     }
   }
 }

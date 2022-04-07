@@ -10,6 +10,7 @@ import { IUserResponse, TPermission } from './types';
 import { RoleService } from '../roles/roles.service';
 import { getObjectIdFromString } from 'src/utils/getObjectIdFromString';
 import { checkId } from 'src/utils/checkId';
+import { handleError } from 'src/utils/handleError';
 
 @Injectable()
 export class UserService {
@@ -39,7 +40,7 @@ export class UserService {
         role,
       };
     }
-    throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    handleError(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
   }
 
   async checkPermissionByUser(
@@ -53,7 +54,7 @@ export class UserService {
   async setPassword({ userId, password }) {
     const user = await this.userModel.findOne({ _id: userId });
     if (!user) {
-      throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      handleError(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     const salt = genSaltSync(10);
     user.password = hashSync(password, salt);
