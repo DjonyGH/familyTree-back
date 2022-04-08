@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
 import { InjectModel } from 'nestjs-typegoose';
 import {
@@ -7,6 +7,7 @@ import {
   ERROR_OF_ROLE_DELETION,
   ERROR_OF_ROLE_UPDATE,
   ROLE_NOT_FOUND,
+  UNKNOWN_ERROR,
 } from 'src/errors/error.consts';
 import { handleError } from 'src/utils/handleError';
 import { CreateOrUpdateRoleDto } from './dto/createOrUpdate.role.dto';
@@ -37,9 +38,15 @@ export class RoleService {
     try {
       const createdRole = await this.roleModel.create(role);
       if (createdRole) return createdRole;
-      handleError(ERROR_OF_ROLE_CREATE, HttpStatus.NOT_FOUND);
-    } catch {
-      handleError(ERROR_OF_ROLE_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
+      throw 'isNotFound';
+    } catch (e) {
+      if (e === 'isNotFound') {
+        handleError(ERROR_OF_ROLE_CREATE, HttpStatus.NOT_FOUND);
+      } else if (e.codeName === 'DuplicateKey') {
+        handleError(ERROR_OF_ROLE_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
+      } else {
+        handleError(UNKNOWN_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 
@@ -53,9 +60,15 @@ export class RoleService {
         new: true,
       });
       if (updatedRole) return updatedRole;
-      handleError(ERROR_OF_ROLE_UPDATE, HttpStatus.NOT_FOUND);
-    } catch {
-      handleError(ERROR_OF_ROLE_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
+      throw 'isNotFound';
+    } catch (e: any) {
+      if (e === 'isNotFound') {
+        handleError(ERROR_OF_ROLE_UPDATE, HttpStatus.BAD_REQUEST);
+      } else if (e.codeName === 'DuplicateKey') {
+        handleError(ERROR_OF_ROLE_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
+      } else {
+        handleError(UNKNOWN_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 

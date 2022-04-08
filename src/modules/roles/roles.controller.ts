@@ -74,7 +74,7 @@ export class RoleController {
     @Session() session: Record<string, any>,
   ) {
     const { userId } = session;
-    return this.userSevice.execAfterUserCheckPermission(
+    return await this.userSevice.execAfterUserCheckPermission(
       userId,
       'administrationPermission',
       () => this.roleSevice.updateRole(id, dto),
