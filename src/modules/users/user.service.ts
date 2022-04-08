@@ -20,12 +20,20 @@ export class UserService {
     private readonly roleService: RoleService,
   ) {}
 
-  async createUser(dto: CreateUserDto): Promise<DocumentType<UserModel>> {
-    return this.userModel.create(dto);
-  }
-
-  async findUser(login: string): Promise<DocumentType<UserModel> | null> {
-    return this.userModel.findOne({ login });
+  async getAllUsers(ownerId: string): Promise<IUserResponse[]> {
+    const users = await this.userModel.find({ ownerId });
+    const roles = await this.roleService.getAllRoles(ownerId);
+    const userResponse: IUserResponse[] = users.map((user) => {
+      const role = roles.find((role) => role.id === user.roleId) || null;
+      user.password = undefined;
+      user.ownerId = undefined;
+      user.roleId = undefined;
+      return {
+        ...user.toObject(),
+        role,
+      };
+    });
+    return userResponse;
   }
 
   async getUserById(id: string): Promise<IUserResponse | null> {
@@ -41,6 +49,14 @@ export class UserService {
       };
     }
     handleError(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+  }
+
+  async createUser(dto: CreateUserDto): Promise<DocumentType<UserModel>> {
+    return this.userModel.create(dto);
+  }
+
+  async findUser(login: string): Promise<DocumentType<UserModel> | null> {
+    return this.userModel.findOne({ login });
   }
 
   async checkPermissionByUser(

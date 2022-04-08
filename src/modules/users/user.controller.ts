@@ -21,9 +21,15 @@ import { FORBIDDEN } from 'src/errors/error.consts';
 export class UserController {
   constructor(private readonly userSevice: UserService) {}
 
-  @Post()
-  async createUser(@Body() dto: CreateUserDto) {
-    return this.userSevice.createUser(dto);
+  @Get()
+  @UseGuards(JWTGuard)
+  async getAllUsers(@Session() session: Record<string, any>) {
+    const { userId, ownerId } = session;
+    return await this.userSevice.execAfterUserCheckPermission(
+      userId,
+      'administrationPermission',
+      this.userSevice.getAllUsers(ownerId),
+    );
   }
 
   @Get(':id')
@@ -38,6 +44,11 @@ export class UserController {
       'administrationPermission',
       this.userSevice.getUserById(id),
     );
+  }
+
+  @Post()
+  async createUser(@Body() dto: CreateUserDto) {
+    return this.userSevice.createUser(dto);
   }
 
   @Post('set-password')

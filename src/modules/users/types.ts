@@ -3,7 +3,7 @@ import { UserModel } from './user.model';
 
 export interface IUserResponse
   extends Omit<UserModel, 'password' | 'ownerId' | 'roleId'> {
-  role: RoleModel;
+  role: RoleModel | null;
 }
 
 export type TPermission =
