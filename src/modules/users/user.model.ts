@@ -1,11 +1,12 @@
-import { prop } from '@typegoose/typegoose';
+import { index, prop } from '@typegoose/typegoose';
 import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 import { BaseWithOwnerId } from 'src/types';
 
 export interface UserModel extends BaseWithOwnerId {}
 
+@index({ login: 1, ownerId: 1 }, { unique: true })
 export class UserModel extends TimeStamps {
-  @prop({ unique: true, required: true })
+  @prop({ required: true })
   login: string;
 
   @prop()

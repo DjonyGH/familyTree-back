@@ -4,12 +4,14 @@ import { genSaltSync, hashSync } from 'bcrypt';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
-import { FORBIDDEN, USER_NOT_FOUND } from '../../errors/error.consts';
+import {
+  ERROR_OF_USER_CREATE,
+  FORBIDDEN,
+  USER_NOT_FOUND,
+} from '../../errors/error.consts';
 import { UserModel } from './user.model';
 import { IUserResponse, TPermission } from './types';
 import { RoleService } from '../roles/roles.service';
-import { getObjectIdFromString } from 'src/utils/getObjectIdFromString';
-import { checkId } from 'src/utils/checkId';
 import { handleError } from 'src/utils/handleError';
 
 @Injectable()
@@ -48,11 +50,22 @@ export class UserService {
         role,
       };
     }
+
     handleError(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
   }
 
-  async createUser(dto: CreateUserDto): Promise<DocumentType<UserModel>> {
-    return this.userModel.create(dto);
+  async createUser(
+    dto: CreateUserDto,
+    ownerId: string,
+  ): Promise<DocumentType<UserModel> | null> {
+    const salt = genSaltSync(10);
+    const password = hashSync(dto.password, salt);
+    const user = { ...dto, password, ownerId };
+    try {
+      return await this.userModel.create(user);
+    } catch {
+      handleError(ERROR_OF_USER_CREATE, HttpStatus.BAD_REQUEST);
+    }
   }
 
   async findUser(login: string): Promise<DocumentType<UserModel> | null> {
@@ -70,14 +83,13 @@ export class UserService {
   async execAfterUserCheckPermission(
     userId: string,
     permission: TPermission,
-    action,
+    action: () => any,
   ) {
     const user = await this.getUserById(userId);
     if (user?.role?.[permission]) {
-      return action;
-    } else {
-      handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
+      return action();
     }
+    handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
   }
 
   async setPassword({ userId, password }) {

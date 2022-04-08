@@ -16,6 +16,7 @@ import { UserService } from './user.service';
 import { JWTGuard } from 'src/jwt/jwt.guard';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { FORBIDDEN } from 'src/errors/error.consts';
+import { handleError } from 'src/utils/handleError';
 
 @Controller('users')
 export class UserController {
@@ -28,7 +29,7 @@ export class UserController {
     return await this.userSevice.execAfterUserCheckPermission(
       userId,
       'administrationPermission',
-      this.userSevice.getAllUsers(ownerId),
+      () => this.userSevice.getAllUsers(ownerId),
     );
   }
 
@@ -39,16 +40,25 @@ export class UserController {
     @Session() session: Record<string, any>,
   ) {
     const { userId } = session;
-    return await this.userSevice.execAfterUserCheckPermission(
+    return this.userSevice.execAfterUserCheckPermission(
       userId,
       'administrationPermission',
-      this.userSevice.getUserById(id),
+      () => this.userSevice.getUserById(id),
     );
   }
 
   @Post()
-  async createUser(@Body() dto: CreateUserDto) {
-    return this.userSevice.createUser(dto);
+  @UseGuards(JWTGuard)
+  async createRole(
+    @Body() dto: CreateUserDto,
+    @Session() session: Record<string, any>,
+  ) {
+    const { userId, ownerId } = session;
+    return this.userSevice.execAfterUserCheckPermission(
+      userId,
+      'administrationPermission',
+      () => this.userSevice.createUser(dto, ownerId),
+    );
   }
 
   @Post('set-password')

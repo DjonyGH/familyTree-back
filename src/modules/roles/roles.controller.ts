@@ -30,10 +30,10 @@ export class RoleController {
   @UseGuards(JWTGuard)
   async getAllRoles(@Session() session: Record<string, any>) {
     const { userId, ownerId } = session;
-    return await this.userSevice.execAfterUserCheckPermission(
+    return this.userSevice.execAfterUserCheckPermission(
       userId,
       'administrationPermission',
-      this.roleSevice.getAllRoles(ownerId),
+      () => this.roleSevice.getAllRoles(ownerId),
     );
   }
 
@@ -45,10 +45,10 @@ export class RoleController {
     @Session() session: Record<string, any>,
   ) {
     const { userId } = session;
-    return await this.userSevice.execAfterUserCheckPermission(
+    return this.userSevice.execAfterUserCheckPermission(
       userId,
       'administrationPermission',
-      this.roleSevice.getRoleById(id),
+      () => this.roleSevice.getRoleById(id),
     );
   }
 
@@ -59,10 +59,10 @@ export class RoleController {
     @Session() session: Record<string, any>,
   ) {
     const { userId, ownerId } = session;
-    return await this.userSevice.execAfterUserCheckPermission(
+    return this.userSevice.execAfterUserCheckPermission(
       userId,
       'administrationPermission',
-      this.roleSevice.createRole(dto, ownerId),
+      () => this.roleSevice.createRole(dto, ownerId),
     );
   }
 
@@ -74,10 +74,10 @@ export class RoleController {
     @Session() session: Record<string, any>,
   ) {
     const { userId } = session;
-    return await this.userSevice.execAfterUserCheckPermission(
+    return this.userSevice.execAfterUserCheckPermission(
       userId,
       'administrationPermission',
-      this.roleSevice.updateRole(id, dto),
+      () => this.roleSevice.updateRole(id, dto),
     );
   }
 
@@ -88,15 +88,10 @@ export class RoleController {
     @Session() session: Record<string, any>,
   ) {
     const { userId } = session;
-    if (
-      await this.userSevice.checkPermissionByUser(
-        userId,
-        'administrationPermission',
-      )
-    ) {
-      return this.roleSevice.deleteRole(id);
-    } else {
-      handleError(FORBIDDEN, HttpStatus.FORBIDDEN);
-    }
+    return await this.userSevice.execAfterUserCheckPermission(
+      userId,
+      'administrationPermission',
+      () => this.roleSevice.deleteRole(id),
+    );
   }
 }

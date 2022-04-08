@@ -1,6 +1,8 @@
 // USERS
 export const USER_NOT_FOUND = 'Пользователь не найден';
 export const USER_NOT_AUTH = 'Пользователь не авторизован';
+export const ERROR_OF_USER_CREATE =
+  'Пользователь с таким логином уже существует';
 
 // ROLES
 export const ROLE_NOT_FOUND = 'Роль не найдена';
