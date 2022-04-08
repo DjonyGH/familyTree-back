@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
 import { InjectModel } from 'nestjs-typegoose';
 import {
+  ERROR_OF_ROLE_CREATE,
   ERROR_OF_ROLE_DELETION,
   ERROR_OF_ROLE_UPDATE,
   ROLE_NOT_FOUND,
@@ -32,7 +33,11 @@ export class RoleService {
     ownerId: string,
   ): Promise<DocumentType<RoleModel>> {
     const role = { ...dto, isOwner: false, ownerId };
-    return this.roleModel.create(role);
+    try {
+      return await this.roleModel.create(role);
+    } catch {
+      handleError(ERROR_OF_ROLE_CREATE, HttpStatus.BAD_REQUEST);
+    }
   }
 
   async updateRole(

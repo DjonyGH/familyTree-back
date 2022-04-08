@@ -1,7 +1,7 @@
-import { IsEmail, IsPhoneNumber, IsString } from 'class-validator';
+import { IsEmail, IsString, Length, Matches } from 'class-validator';
 
 export class UpdateUserDto {
-  @IsPhoneNumber('RU', { message: 'Это не телефонный номер' })
+  @Length(3, 30, { message: 'Логин должен быть от 3 до 30 символов' })
   login: string;
 
   @IsString()
@@ -9,4 +9,7 @@ export class UpdateUserDto {
 
   @IsEmail()
   email?: string;
+
+  @Matches(/^[0-9a-fA-F]{24}$/)
+  roleId: string;
 }

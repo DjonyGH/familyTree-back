@@ -5,7 +5,9 @@ import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
 import {
+  ERROR_OF_USER_ALREADY_EXIST,
   ERROR_OF_USER_CREATE,
+  ERROR_OF_USER_UPDATE,
   FORBIDDEN,
   USER_NOT_FOUND,
 } from '../../errors/error.consts';
@@ -57,14 +59,51 @@ export class UserService {
   async createUser(
     dto: CreateUserDto,
     ownerId: string,
-  ): Promise<DocumentType<UserModel> | null> {
+  ): Promise<IUserResponse | null> {
     const salt = genSaltSync(10);
     const password = hashSync(dto.password, salt);
     const user = { ...dto, password, ownerId };
     try {
-      return await this.userModel.create(user);
-    } catch {
+      const createdUser = await this.userModel.create(user);
+      if (createdUser) {
+        const role = await this.roleService.getRoleById(user.roleId);
+        createdUser.password = undefined;
+        createdUser.ownerId = undefined;
+        createdUser.roleId = undefined;
+        return {
+          ...createdUser.toObject(),
+          role,
+        };
+      }
       handleError(ERROR_OF_USER_CREATE, HttpStatus.BAD_REQUEST);
+    } catch {
+      handleError(ERROR_OF_USER_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateUser(
+    id: string,
+    dto: UpdateUserDto,
+  ): Promise<IUserResponse | null> {
+    const user = { ...dto, password: undefined };
+
+    try {
+      const updatedUser = await this.userModel.findByIdAndUpdate(id, user, {
+        new: true,
+      });
+      if (updatedUser) {
+        const role = await this.roleService.getRoleById(user.roleId);
+        updatedUser.password = undefined;
+        updatedUser.ownerId = undefined;
+        updatedUser.roleId = undefined;
+        return {
+          ...updatedUser.toObject(),
+          role,
+        };
+      }
+      handleError(ERROR_OF_USER_UPDATE, HttpStatus.NOT_FOUND);
+    } catch {
+      handleError(ERROR_OF_USER_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -100,9 +139,5 @@ export class UserService {
     const salt = genSaltSync(10);
     user.password = hashSync(password, salt);
     user.save();
-  }
-
-  async updateUser(dto: UpdateUserDto) {
-    return this.userModel.updateOne({ login: dto.login }, dto);
   }
 }

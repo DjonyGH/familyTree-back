@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Session,
   UseGuards,
   UsePipes,
@@ -17,6 +18,7 @@ import { JWTGuard } from 'src/jwt/jwt.guard';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { FORBIDDEN } from 'src/errors/error.consts';
 import { handleError } from 'src/utils/handleError';
+import { UpdateUserDto } from './dto/update.user.dto';
 
 @Controller('users')
 export class UserController {
@@ -49,7 +51,7 @@ export class UserController {
 
   @Post()
   @UseGuards(JWTGuard)
-  async createRole(
+  async createUser(
     @Body() dto: CreateUserDto,
     @Session() session: Record<string, any>,
   ) {
@@ -58,6 +60,21 @@ export class UserController {
       userId,
       'administrationPermission',
       () => this.userSevice.createUser(dto, ownerId),
+    );
+  }
+
+  @Put(':id')
+  @UseGuards(JWTGuard)
+  async updateUser(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+    @Session() session: Record<string, any>,
+  ) {
+    const { userId } = session;
+    return this.userSevice.execAfterUserCheckPermission(
+      userId,
+      'administrationPermission',
+      () => this.userSevice.updateUser(id, dto),
     );
   }
 
