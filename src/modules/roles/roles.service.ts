@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
 import { InjectModel } from 'nestjs-typegoose';
 import {
+  ERROR_OF_ROLE_ALREADY_EXIST,
   ERROR_OF_ROLE_CREATE,
   ERROR_OF_ROLE_DELETION,
   ERROR_OF_ROLE_UPDATE,
@@ -34,9 +35,11 @@ export class RoleService {
   ): Promise<DocumentType<RoleModel>> {
     const role = { ...dto, isOwner: false, ownerId };
     try {
-      return await this.roleModel.create(role);
+      const createdRole = await this.roleModel.create(role);
+      if (createdRole) return createdRole;
+      handleError(ERROR_OF_ROLE_CREATE, HttpStatus.NOT_FOUND);
     } catch {
-      handleError(ERROR_OF_ROLE_CREATE, HttpStatus.BAD_REQUEST);
+      handleError(ERROR_OF_ROLE_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -45,13 +48,15 @@ export class RoleService {
     dto: CreateOrUpdateRoleDto,
   ): Promise<DocumentType<RoleModel>> {
     const role = { ...dto, isOwner: false };
-    const updatedRole = await this.roleModel.findByIdAndUpdate(id, role, {
-      new: true,
-    });
-
-    if (updatedRole) return updatedRole;
-
-    handleError(ERROR_OF_ROLE_UPDATE, HttpStatus.NOT_FOUND);
+    try {
+      const updatedRole = await this.roleModel.findByIdAndUpdate(id, role, {
+        new: true,
+      });
+      if (updatedRole) return updatedRole;
+      handleError(ERROR_OF_ROLE_UPDATE, HttpStatus.NOT_FOUND);
+    } catch {
+      handleError(ERROR_OF_ROLE_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
+    }
   }
 
   async deleteRole(id: string) {

@@ -8,7 +8,9 @@ export const ERROR_OF_USER_UPDATE = 'Ошибка обновления поль�
 
 // ROLES
 export const ROLE_NOT_FOUND = 'Роль не найдена';
-export const ERROR_OF_ROLE_CREATE = 'Роль с таким наименованием уже существует';
+export const ERROR_OF_ROLE_ALREADY_EXIST =
+  'Роль с таким наименованием уже существует';
+export const ERROR_OF_ROLE_CREATE = 'Ошибка создания роли';
 export const ERROR_OF_ROLE_UPDATE = 'Ошибка обновления роли';
 export const ERROR_OF_ROLE_DELETION = 'Ошибка удаления роли';
 
