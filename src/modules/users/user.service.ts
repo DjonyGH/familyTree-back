@@ -43,7 +43,7 @@ export class UserService {
   async getUserById(id: string): Promise<IUserResponse | null> {
     const user = await this.userModel.findById(id);
     if (user) {
-      const role = await this.roleService.getRoleById(user.roleId);
+      const role = (await this.roleService.getRoleById(user.roleId)) || null;
       user.password = undefined;
       user.ownerId = undefined;
       user.roleId = undefined;
@@ -66,13 +66,13 @@ export class UserService {
     try {
       const createdUser = await this.userModel.create(user);
       if (createdUser) {
-        const role = await this.roleService.getRoleById(user.roleId);
+        const role = (await this.roleService.getRoleById(user.roleId)) || null;
         createdUser.password = undefined;
         createdUser.ownerId = undefined;
         createdUser.roleId = undefined;
         return {
           ...createdUser.toObject(),
-          role,
+          role: role || null,
         };
       }
       handleError(ERROR_OF_USER_CREATE, HttpStatus.BAD_REQUEST);
@@ -92,7 +92,7 @@ export class UserService {
         new: true,
       });
       if (updatedUser) {
-        const role = await this.roleService.getRoleById(user.roleId);
+        const role = (await this.roleService.getRoleById(user.roleId)) || null;
         updatedUser.password = undefined;
         updatedUser.ownerId = undefined;
         updatedUser.roleId = undefined;

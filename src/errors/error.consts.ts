@@ -12,7 +12,7 @@ export const ERROR_OF_ROLE_ALREADY_EXIST =
   'Роль с таким наименованием уже существует';
 export const ERROR_OF_ROLE_CREATE = 'Ошибка создания роли';
 export const ERROR_OF_ROLE_UPDATE =
-  'Ошибка обновления роли. Данный пользователь не найден';
+  'Ошибка обновления роли. Данная роль не найдена';
 export const ERROR_OF_ROLE_DELETION = 'Ошибка удаления роли';
 
 // AUTH

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
 import { InjectModel } from 'nestjs-typegoose';
 import {
@@ -7,9 +7,8 @@ import {
   ERROR_OF_ROLE_DELETION,
   ERROR_OF_ROLE_UPDATE,
   ROLE_NOT_FOUND,
-  UNKNOWN_ERROR,
 } from 'src/errors/error.consts';
-import { handleError } from 'src/utils/handleError';
+import { handleError, handleManyErrors } from 'src/utils/handleError';
 import { CreateOrUpdateRoleDto } from './dto/createOrUpdate.role.dto';
 import { RoleModel } from './roles.model';
 
@@ -25,9 +24,13 @@ export class RoleService {
   }
 
   async getRoleById(id: string): Promise<DocumentType<RoleModel> | null> {
-    const role = await this.roleModel.findById(id);
-    if (role) return role;
-    handleError(ROLE_NOT_FOUND, HttpStatus.NOT_FOUND);
+    try {
+      const role = await this.roleModel.findById(id);
+      if (role) return role;
+      throw 'notFound';
+    } catch (e) {
+      handleManyErrors(e, ROLE_NOT_FOUND);
+    }
   }
 
   async createRole(
@@ -38,15 +41,9 @@ export class RoleService {
     try {
       const createdRole = await this.roleModel.create(role);
       if (createdRole) return createdRole;
-      throw 'isNotFound';
+      throw 'notFound';
     } catch (e) {
-      if (e === 'isNotFound') {
-        handleError(ERROR_OF_ROLE_CREATE, HttpStatus.NOT_FOUND);
-      } else if (e.codeName === 'DuplicateKey') {
-        handleError(ERROR_OF_ROLE_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
-      } else {
-        handleError(UNKNOWN_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+      handleManyErrors(e, ERROR_OF_ROLE_CREATE, ERROR_OF_ROLE_ALREADY_EXIST);
     }
   }
 
@@ -60,21 +57,19 @@ export class RoleService {
         new: true,
       });
       if (updatedRole) return updatedRole;
-      throw 'isNotFound';
+      throw 'notFound';
     } catch (e: any) {
-      if (e === 'isNotFound') {
-        handleError(ERROR_OF_ROLE_UPDATE, HttpStatus.BAD_REQUEST);
-      } else if (e.codeName === 'DuplicateKey') {
-        handleError(ERROR_OF_ROLE_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
-      } else {
-        handleError(UNKNOWN_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+      handleManyErrors(e, ERROR_OF_ROLE_UPDATE, ERROR_OF_ROLE_ALREADY_EXIST);
     }
   }
 
   async deleteRole(id: string) {
-    const deletedRole = await this.roleModel.findByIdAndRemove(id);
-    if (deletedRole) return deletedRole;
-    handleError(ERROR_OF_ROLE_DELETION, HttpStatus.NOT_FOUND);
+    try {
+      const deletedRole = await this.roleModel.findByIdAndRemove(id);
+      if (deletedRole) return deletedRole;
+      throw 'notFound';
+    } catch (e: any) {
+      handleManyErrors(e, ERROR_OF_ROLE_DELETION);
+    }
   }
 }
