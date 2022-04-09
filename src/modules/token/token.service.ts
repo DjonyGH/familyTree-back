@@ -106,7 +106,7 @@ export class TokenService {
     if (!userSubLogin) {
       throw new HttpException(TOKEN_ERROR, HttpStatus.FORBIDDEN);
     }
-    return this.userService.findUser(userSubLogin);
+    return this.userService.findUserByLogin(userSubLogin);
   }
 
   async refresh(

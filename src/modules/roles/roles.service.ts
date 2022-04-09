@@ -2,11 +2,14 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
 import { InjectModel } from 'nestjs-typegoose';
 import {
+  ERROR_OF_IS_OWNER_ROLE_DELETION,
+  ERROR_OF_IS_OWNER_ROLE_UPDATE,
   ERROR_OF_ROLE_ALREADY_EXIST,
   ERROR_OF_ROLE_CREATE,
   ERROR_OF_ROLE_DELETION,
   ERROR_OF_ROLE_UPDATE,
   ROLE_NOT_FOUND,
+  UNKNOWN_ERROR,
 } from 'src/errors/error.consts';
 import { handleError, handleManyErrors } from 'src/utils/handleError';
 import { CreateOrUpdateRoleDto } from './dto/createOrUpdate.role.dto';
@@ -20,7 +23,11 @@ export class RoleService {
   ) {}
 
   async getAllRoles(ownerId: string): Promise<DocumentType<RoleModel>[]> {
-    return this.roleModel.find({ ownerId });
+    try {
+      return this.roleModel.find({ ownerId });
+    } catch {
+      handleError(UNKNOWN_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async getRoleById(id: string): Promise<DocumentType<RoleModel> | null> {
@@ -51,6 +58,11 @@ export class RoleService {
     id: string,
     dto: CreateOrUpdateRoleDto,
   ): Promise<DocumentType<RoleModel>> {
+    const updatingRole = await this.getRoleById(id);
+    // !!! Здесь должно быть: изменять роль "Владелец аккаунта" может только он сам, при этом только name и description
+    if (updatingRole.isOwner)
+      handleError(ERROR_OF_IS_OWNER_ROLE_UPDATE, HttpStatus.BAD_REQUEST);
+
     const role = { ...dto, isOwner: false };
     try {
       const updatedRole = await this.roleModel.findByIdAndUpdate(id, role, {
@@ -64,6 +76,10 @@ export class RoleService {
   }
 
   async deleteRole(id: string) {
+    const deletingRole = await this.getRoleById(id);
+    // Нельзя удалить роль "Владелец аккаунта"
+    if (deletingRole.isOwner)
+      handleError(ERROR_OF_IS_OWNER_ROLE_DELETION, HttpStatus.BAD_REQUEST);
     try {
       const deletedRole = await this.roleModel.findByIdAndRemove(id);
       if (deletedRole) return deletedRole;

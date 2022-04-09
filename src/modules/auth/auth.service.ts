@@ -13,7 +13,7 @@ export class AuthService {
 
   async login(dto) {
     const { login, password } = dto;
-    const user = await this.userService.findUser(login);
+    const user = await this.userService.findUserByLogin(login);
 
     if (user) {
       const checkPassword =
