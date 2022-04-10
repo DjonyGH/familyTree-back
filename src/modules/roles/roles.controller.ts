@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Post,
   Put,
@@ -15,8 +13,6 @@ import { RoleService } from './roles.service';
 import { JWTGuard } from 'src/jwt/jwt.guard';
 import { CreateOrUpdateRoleDto } from './dto/createOrUpdate.role.dto';
 import { UserService } from '../users/user.service';
-import { FORBIDDEN } from 'src/errors/error.consts';
-import { handleError } from 'src/utils/handleError';
 
 @Controller('roles')
 export class RoleController {

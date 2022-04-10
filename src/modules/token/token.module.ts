@@ -4,8 +4,6 @@ import { TokenController } from './token.controller';
 import { UserModule } from '../users/user.module';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { TokenModel } from './token.model';
-import { JwtModule } from '@nestjs/jwt';
-import { JWTGuard } from 'src/jwt/jwt.guard';
 import { MyJwtModule } from 'src/jwt/myJwt.module';
 
 @Module({

@@ -1,4 +1,4 @@
-import { IsPhoneNumber, Length } from 'class-validator';
+import { Length } from 'class-validator';
 
 export class AuthDto {
   @Length(3, 30, { message: 'Логин должен быть от 3 до 30 символов' })

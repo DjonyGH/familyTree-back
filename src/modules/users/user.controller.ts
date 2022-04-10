@@ -2,8 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Post,
   Put,
@@ -16,8 +14,6 @@ import { SetPasswordUserDto } from './dto/setPassword.user.dto';
 import { UserService } from './user.service';
 import { JWTGuard } from 'src/jwt/jwt.guard';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
-import { FORBIDDEN } from 'src/errors/error.consts';
-import { handleError } from 'src/utils/handleError';
 import { UpdateUserDto } from './dto/update.user.dto';
 
 @Controller('users')
