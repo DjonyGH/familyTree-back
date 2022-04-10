@@ -7,6 +7,7 @@ import { UpdateUserDto } from './dto/update.user.dto';
 import {
   ERROR_OF_OWNER_DELETION,
   ERROR_OF_OWNER_ROLE_UPDATE,
+  ERROR_OF_OWNER_UPDATE,
   ERROR_OF_USER_ALREADY_EXIST,
   ERROR_OF_USER_AS_OWNER_CREATE,
   ERROR_OF_USER_CREATE,
@@ -100,9 +101,14 @@ export class UserService {
   async updateUser(
     id: string,
     dto: UpdateUserDto,
+    isOwner: boolean,
   ): Promise<IUserResponse | null> {
     const updatingUser = await this.findUserById(id);
-    // !!! Здесь должно быть: изменять пользователя "Владелец аккаунта" может только он сам, при этом только name и email
+    // Нельзя изменять пользователя "Владелец аккаунта", елси ты не "Владелец аккаунта"
+    if (!isOwner && updatingUser.id === updatingUser.ownerId) {
+      handleError(ERROR_OF_OWNER_UPDATE, HttpStatus.BAD_REQUEST);
+    }
+    // Нельзя изменять роль у пользователя "Владелец аккаунта"
     if (
       updatingUser.id === updatingUser.ownerId &&
       dto.roleId !== updatingUser.roleId

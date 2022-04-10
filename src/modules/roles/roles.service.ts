@@ -57,13 +57,28 @@ export class RoleService {
   async updateRole(
     id: string,
     dto: CreateOrUpdateRoleDto,
+    isOwner: boolean,
   ): Promise<DocumentType<RoleModel>> {
     const updatingRole = await this.getRoleById(id);
-    // !!! Здесь должно быть: изменять роль "Владелец аккаунта" может только он сам, при этом только name и description
-    if (updatingRole.isOwner)
+
+    // Нельзя изменять роль "Владелец аккаунта", если ты не "Владелец аккаунта"
+    if (!isOwner && updatingRole.isOwner)
       handleError(ERROR_OF_IS_OWNER_ROLE_UPDATE, HttpStatus.BAD_REQUEST);
 
-    const role = { ...dto, isOwner: false };
+    let role;
+    // Изменять роль "Владелец аккаунта" можно только в составе полей name и description
+    if (isOwner && updatingRole.isOwner) {
+      role = {
+        ...dto,
+        administrationPermission: true,
+        operationPermission: true,
+        billingPermission: true,
+        isOwner: true,
+      };
+    } else {
+      role = { ...dto, isOwner: false };
+    }
+
     try {
       const updatedRole = await this.roleModel.findByIdAndUpdate(id, role, {
         new: true,

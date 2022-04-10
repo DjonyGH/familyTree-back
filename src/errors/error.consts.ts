@@ -3,12 +3,17 @@ export const USER_NOT_FOUND = 'Пользователь не найден';
 export const USER_NOT_AUTH = 'Пользователь не авторизован';
 export const ERROR_OF_USER_ALREADY_EXIST =
   'Пользователь с таким логином уже существует';
+
 export const ERROR_OF_USER_CREATE = 'Ошибка создания пользователя';
 export const ERROR_OF_USER_AS_OWNER_CREATE =
   'Ошибка! Нельзя создать пользователя с ролью владельца аккаунта';
+
 export const ERROR_OF_USER_UPDATE = 'Ошибка обновления пользователя';
+export const ERROR_OF_OWNER_UPDATE =
+  'Ошибка! Изменять пользователя "Владелец аккаунта" может только он сам';
 export const ERROR_OF_OWNER_ROLE_UPDATE =
   'Ошибка! Нельзя изменить роль у владельца аккаунта';
+
 export const ERROR_OF_USER_DELETION = 'Ошибка удаления пользователя';
 export const ERROR_OF_OWNER_DELETION =
   'Ошибка! Нельзя удалить владельца аккаунта';
@@ -21,7 +26,7 @@ export const ERROR_OF_ROLE_CREATE = 'Ошибка создания роли';
 export const ERROR_OF_ROLE_UPDATE =
   'Ошибка обновления роли. Данная роль не найдена';
 export const ERROR_OF_IS_OWNER_ROLE_UPDATE =
-  'Ошибка! Нельзя изменить роль "Владелец аккаунта"';
+  'Ошибка! Изменить роль "Владелец аккаунта" может только он сам';
 export const ERROR_OF_ROLE_DELETION = 'Ошибка удаления роли';
 export const ERROR_OF_IS_OWNER_ROLE_DELETION =
   'Ошибка! Нельзя удалить роль "Владелец аккаунта"';

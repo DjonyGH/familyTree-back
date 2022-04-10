@@ -70,11 +70,12 @@ export class UserController {
     @Body() dto: UpdateUserDto,
     @Session() session: Record<string, any>,
   ) {
-    const { userId } = session;
+    const { userId, ownerId } = session;
+    const isOwner = userId === ownerId;
     return this.userSevice.execAfterUserCheckPermission(
       userId,
       'administrationPermission',
-      () => this.userSevice.updateUser(id, dto),
+      () => this.userSevice.updateUser(id, dto, isOwner),
     );
   }
 

@@ -73,11 +73,12 @@ export class RoleController {
     @Body() dto: CreateOrUpdateRoleDto,
     @Session() session: Record<string, any>,
   ) {
-    const { userId } = session;
+    const { userId, ownerId } = session;
+    const isOwner = userId === ownerId;
     return await this.userSevice.execAfterUserCheckPermission(
       userId,
       'administrationPermission',
-      () => this.roleSevice.updateRole(id, dto),
+      () => this.roleSevice.updateRole(id, dto, isOwner),
     );
   }
 
