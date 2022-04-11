@@ -13,6 +13,8 @@ export const ERROR_OF_OWNER_UPDATE =
   'Ошибка! Изменять пользователя "Владелец аккаунта" может только он сам';
 export const ERROR_OF_OWNER_ROLE_UPDATE =
   'Ошибка! Нельзя изменить роль у владельца аккаунта';
+export const ERROR_OF_IS_OWNER_ROLE_TO_USER_UPDATE =
+  'Ошибка! Нельзя присвоить роль "Владелец аккаунта" обычному пользователю';
 
 export const ERROR_OF_USER_DELETION = 'Ошибка удаления пользователя';
 export const ERROR_OF_OWNER_DELETION =

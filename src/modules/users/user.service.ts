@@ -5,6 +5,7 @@ import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
 import {
+  ERROR_OF_IS_OWNER_ROLE_TO_USER_UPDATE,
   ERROR_OF_OWNER_DELETION,
   ERROR_OF_OWNER_ROLE_UPDATE,
   ERROR_OF_OWNER_UPDATE,
@@ -104,6 +105,7 @@ export class UserService {
     isOwner: boolean,
   ): Promise<IUserResponse | null> {
     const updatingUser = await this.findUserById(id);
+    const role = (await this.roleService.getRoleById(dto.roleId)) || null;
     // Нельзя изменять пользователя "Владелец аккаунта", елси ты не "Владелец аккаунта"
     if (!isOwner && updatingUser.id === updatingUser.ownerId) {
       handleError(ERROR_OF_OWNER_UPDATE, HttpStatus.BAD_REQUEST);
@@ -115,6 +117,13 @@ export class UserService {
     ) {
       handleError(ERROR_OF_OWNER_ROLE_UPDATE, HttpStatus.BAD_REQUEST);
     }
+    // Нельзя присвоить роль "Владелец аккаунта" обычному пользователю
+    if (updatingUser.id !== updatingUser.ownerId && role.isOwner) {
+      handleError(
+        ERROR_OF_IS_OWNER_ROLE_TO_USER_UPDATE,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     const user = { ...dto, password: undefined, login: undefined };
     try {
@@ -122,7 +131,6 @@ export class UserService {
         new: true,
       });
       if (updatedUser) {
-        const role = (await this.roleService.getRoleById(user.roleId)) || null;
         updatedUser.password = undefined;
         updatedUser.ownerId = undefined;
         updatedUser.roleId = undefined;
