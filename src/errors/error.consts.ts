@@ -1,5 +1,6 @@
 // USERS
 export const USER_NOT_FOUND = 'Пользователь не найден';
+export const USER_FORBIDDEN = 'Пользователь не доступен';
 export const USER_NOT_AUTH = 'Пользователь не авторизован';
 export const ERROR_OF_USER_ALREADY_EXIST =
   'Пользователь с таким логином уже существует';
