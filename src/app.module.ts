@@ -8,7 +8,7 @@ import { getMongoConfig } from './configs/mongo.config';
 import { UserModule } from './modules/users/user.module';
 import { TokenModule } from './modules/token/token.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { RoleModule } from './modules/roles/roles.module';
+import { PermissionModule } from './modules/permissions/permission.module';
 
 @Module({
   imports: [
@@ -21,8 +21,8 @@ import { RoleModule } from './modules/roles/roles.module';
     ScheduleModule.forRoot(),
     AuthModule,
     UserModule,
-    RoleModule,
     TokenModule,
+    PermissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -20,69 +20,25 @@ import { UpdateUserDto } from './dto/update.user.dto';
 export class UserController {
   constructor(private readonly userSevice: UserService) {}
 
-  @Get()
-  @UseGuards(JWTGuard)
-  async getAllUsers(@Session() session: Record<string, any>) {
-    const { userId, ownerId } = session;
-    return await this.userSevice.execAfterUserCheckPermission(
-      userId,
-      'administrationPermission',
-      () => this.userSevice.getAllUsers(ownerId),
-    );
-  }
+  // @Get()
+  // @UseGuards(JWTGuard)
+  // async getAllUsers() {}
 
+  // Возвращает юзера, его пермишены и деревья доступнеы ему
   @Get(':id')
   @UseGuards(JWTGuard)
-  async getUser(
-    @Param('id') id: string,
-    @Session() session: Record<string, any>,
-  ) {
-    const { userId } = session;
-    return this.userSevice.execAfterUserCheckPermission(
-      userId,
-      'administrationPermission',
-      () => this.userSevice.getUserById(id),
-    );
-  }
+  async getUser() {}
 
   @Post()
   @UseGuards(JWTGuard)
-  async createUser(
-    @Body() dto: CreateUserDto,
-    @Session() session: Record<string, any>,
-  ) {
-    const { userId, ownerId } = session;
-    return this.userSevice.execAfterUserCheckPermission(
-      userId,
-      'administrationPermission',
-      () => this.userSevice.createUser(dto, ownerId),
-    );
-  }
+  async createUser() {}
 
   @Put(':id')
   @UseGuards(JWTGuard)
-  async updateUser(
-    @Param('id') id: string,
-    @Body() dto: UpdateUserDto,
-    @Session() session: Record<string, any>,
-  ) {
-    const { userId, ownerId } = session;
-    const isOwner = userId === ownerId;
-    return this.userSevice.execAfterUserCheckPermission(
-      userId,
-      'administrationPermission',
-      () => this.userSevice.updateUser(id, dto, isOwner),
-    );
-  }
+  async updateUser() {}
 
   @Post('set-password')
   @UseGuards(JWTGuard)
   @UsePipes(ValidationPipe)
-  async setPassword(
-    @Body() dto: SetPasswordUserDto,
-    @Session() session: Record<string, any>,
-  ) {
-    const userId = session.userId;
-    return this.userSevice.setPassword({ userId, password: dto.password });
-  }
+  async setPassword() {}
 }

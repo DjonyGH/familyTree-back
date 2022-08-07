@@ -21,7 +21,7 @@ const getMongoUri = (configService: ConfigService) =>
   configService.get('MONGO_AUTH_DB');
 
 const getMongoOptions = () => ({
-  // useNewUrlParser: true,
+  useNewUrlParser: true,
   // useCreateIndex: true,
-  // useUnifiedTopology: true,
+  useUnifiedTopology: true,
 });

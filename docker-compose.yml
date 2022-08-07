@@ -10,7 +10,7 @@ services:
       - MONGO_INITDB_DATABASE=mylogistic
     # command: mongod --port 27018
     ports:
-      - 27017:27017
+      - 27018:27017
     # expose:
     #   - 27018
     volumes:

@@ -1,10 +1,9 @@
 import { index, prop } from '@typegoose/typegoose';
-import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
-import { BaseWithOwnerId } from 'src/types';
+import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 
-export interface UserModel extends BaseWithOwnerId {}
+export interface UserModel extends Base {}
 
-@index({ login: 1, ownerId: 1 }, { unique: true })
+@index({ login: 1 }, { unique: true })
 export class UserModel extends TimeStamps {
   @prop({ required: true })
   login: string;
@@ -13,17 +12,14 @@ export class UserModel extends TimeStamps {
   password: string;
 
   @prop()
-  name?: string;
+  name: string;
 
   @prop()
   email?: string;
 
   @prop()
+  phone?: string;
+
+  @prop()
   isBlocked: boolean;
-
-  @prop({ required: true })
-  ownerId: string;
-
-  @prop({ required: true })
-  roleId: string;
 }
