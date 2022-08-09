@@ -19,10 +19,10 @@ export class TreeController {
 
   @Get()
   @UseGuards(JWTGuard)
-  async getTree(@Session() session: Record<string, any>) {
-    console.log('controller: get tree by user id');
+  async getAllTrees(@Session() session: Record<string, any>) {
+    console.log('controller: get all trees by user id');
     const { userId } = session;
-    return this.treeSevice.getTreeByUserId(userId);
+    return this.treeSevice.getAllTreesByUserId(userId);
   }
 
   @Post()
