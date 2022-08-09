@@ -12,6 +12,8 @@ export const ERROR_OF_PERMISSION_UPDATE = 'Ошибка изменения пр�
 
 // TREES
 export const TREE_NOT_FOUND = 'Семейные деревья не найдены';
+export const ERROR_OF_TREE_CREATE = 'Ошибка создания семейного дерева';
+export const ERROR_OF_TREE_UPDATE = 'Ошибка изменения семейного дерева';
 
 export const ERROR_OF_USER_CREATE = 'Ошибка создания пользователя';
 export const ERROR_OF_USER_AS_OWNER_CREATE =

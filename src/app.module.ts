@@ -9,6 +9,7 @@ import { UserModule } from './modules/users/user.module';
 import { TokenModule } from './modules/token/token.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PermissionModule } from './modules/permissions/permission.module';
+import { TreeModule } from './modules/trees/tree.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PermissionModule } from './modules/permissions/permission.module';
     UserModule,
     TokenModule,
     PermissionModule,
+    TreeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

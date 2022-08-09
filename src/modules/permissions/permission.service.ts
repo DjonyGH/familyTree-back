@@ -29,11 +29,11 @@ export class PermissionService {
 
   async createPermission(
     dto: CreatePermissionDto,
-    userId: string,
+    createdBy: string,
   ): Promise<DocumentType<PermissionModel>> {
     try {
       // Здесь нужна проверка, что юзер может создавать пермишены только для тех деревьев, в которых он админ
-      const permission = { ...dto, createdBy: userId };
+      const permission = { ...dto, createdBy };
       const createPermission = await this.permissionModel.create(permission);
       if (createPermission) return createPermission;
     } catch (e) {
@@ -44,9 +44,13 @@ export class PermissionService {
     }
   }
 
-  async updatePermission(dto: UpdatePermissionDto, userId: string, id: string) {
+  async updatePermission(
+    dto: UpdatePermissionDto,
+    updatedBy: string,
+    id: string,
+  ) {
     try {
-      const permission = { ...dto, createdBy: userId };
+      const permission = { ...dto, updatedBy };
       const updatedUser = await this.permissionModel.findByIdAndUpdate(
         id,
         permission,
