@@ -13,7 +13,7 @@ export class UserService {
   ) {}
 
   async getUserById(id: string): Promise<IUserResponse | null> {
-    console.log('service get user');
+    console.log('service: get user by id');
     try {
       const user = await this.userModel.findById(id);
       if (user) {

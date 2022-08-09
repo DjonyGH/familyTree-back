@@ -1,12 +1,7 @@
-import { IsEmail, IsString, Matches } from 'class-validator';
+import { IsEmail, IsEnum, IsString, Matches } from 'class-validator';
+import { EType } from '../types';
 
-export class UpdateUserDto {
-  @IsString()
-  name?: string;
-
-  @IsEmail()
-  email?: string;
-
-  @Matches(/^[0-9a-fA-F]{24}$/)
-  roleId: string;
+export class UpdatePermissionDto {
+  @IsEnum(EType, { each: true, message: 'Неверный тип права доступа' })
+  type?: EType;
 }

@@ -10,12 +10,15 @@ export class PermissionModel extends TimeStamps {
   @prop({ required: true })
   userId: string;
 
-  @prop()
+  @prop({ required: true })
   treeId: string;
 
-  @prop()
-  createdAt: Date;
+  @prop({ required: true })
+  createdBy: string;
 
   @prop()
+  updatedBy: string;
+
+  @prop({ required: true })
   type: EType;
 }

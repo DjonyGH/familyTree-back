@@ -5,6 +5,14 @@ export const USER_NOT_AUTH = 'Пользователь не авторизова
 export const ERROR_OF_USER_ALREADY_EXIST =
   'Пользователь с таким логином уже существует';
 
+// PERMISSIONS
+export const PERMISSION_NOT_FOUND = 'Права доступа не найдены';
+export const ERROR_OF_PERMISSION_CREATE = 'Ошибка создания права доступа';
+export const ERROR_OF_PERMISSION_UPDATE = 'Ошибка изменения права доступа';
+
+// TREES
+export const TREE_NOT_FOUND = 'Семейные деревья не найдены';
+
 export const ERROR_OF_USER_CREATE = 'Ошибка создания пользователя';
 export const ERROR_OF_USER_AS_OWNER_CREATE =
   'Ошибка! Нельзя создать пользователя с ролью владельца аккаунта';

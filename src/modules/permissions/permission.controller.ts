@@ -7,23 +7,50 @@ import {
   Put,
   Session,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create.permission.dto';
 import { PermissionService } from './permission.service';
 import { JWTGuard } from 'src/jwt/jwt.guard';
-import { ValidationPipe } from 'src/pipes/validation.pipe';
-import { UpdateUserDto } from './dto/update.permission.dto';
+import { CreatePermissionDto } from './dto/create.permission.dto';
+import { UpdatePermissionDto } from './dto/update.permission.dto';
 
 @Controller('permissions')
 export class PermissionController {
   constructor(private readonly permissionSevice: PermissionService) {}
 
+  @Get()
+  @UseGuards(JWTGuard)
+  async getPermission(@Session() session: Record<string, any>) {
+    console.log('controller: get permission by user id');
+    const { userId } = session;
+    return this.permissionSevice.getPermissionByUserId(userId);
+  }
+
   @Post()
   @UseGuards(JWTGuard)
-  async createPermission() {}
+  async createPermission(
+    @Body() dto: CreatePermissionDto,
+    @Session() session: Record<string, any>,
+  ) {
+    try {
+      const { userId } = session;
+      return this.permissionSevice.createPermission(dto, userId);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   @Put(':id')
   @UseGuards(JWTGuard)
-  async updatePermission() {}
+  async updatePermission(
+    @Param('id') id: string,
+    @Body() dto: UpdatePermissionDto,
+    @Session() session: Record<string, any>,
+  ) {
+    try {
+      const { userId } = session;
+      return this.permissionSevice.updatePermission(dto, userId, id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

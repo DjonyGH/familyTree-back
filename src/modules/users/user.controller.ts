@@ -30,6 +30,7 @@ export class UserController {
     @Param('id') id: string,
     @Session() session: Record<string, any>,
   ) {
+    console.log('controller: get user by id');
     const { userId } = session;
     if (id === userId) {
       return this.userSevice.getUserById(userId);
