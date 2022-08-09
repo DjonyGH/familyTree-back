@@ -8,6 +8,7 @@ import {
   ERROR_OF_TREE_CREATE,
   PERMISSION_NOT_FOUND,
 } from 'src/errors/error.consts';
+import { TObjectId } from 'src/types';
 import { CreatePermissionDto } from '../permissions/dto/create.permission.dto';
 import { PermissionModel } from '../permissions/permission.model';
 import { PermissionService } from '../permissions/permission.service';
@@ -26,30 +27,24 @@ export class TreeService {
     private readonly permissionService: PermissionService,
   ) {}
 
-  async getAllTreesByUserId(userId: string): Promise<any[]> {
-    console.log('service: get all trees by user id');
+  async getAllTreesByUserId(userId: TObjectId): Promise<any[]> {
     try {
       const permissions =
         await this.permissionService.getAllPermissionsWithTreeByUserId(userId);
-      // const trees = await this.treeModel.aggregate().lookup({
-      //   from: 'permissions',
-      //   localField: 'treeId',
-      //   foreignField: 'id',
-      //   as: 'permission',
-      // });
-      // console.log('>>>', trees);
 
       const trees = permissions.reduce((acc, item) => {
-        const tree = {
-          id: item.treeId,
-          name: item.treeObj[0].name,
-          permissionType: item.type,
-          createdBy: item.treeObj[0].createdBy,
-          updatedBy: item.treeObj[0].updatedBy,
-          createdAt: item.treeObj[0].createdAt,
-          updatedAt: item.treeObj[0].updatedAt,
-        };
-        acc.push(tree);
+        if (item.treeObj[0]) {
+          const tree = {
+            id: item.treeId,
+            name: item.treeObj[0].name,
+            permissionType: item.type,
+            createdBy: item.treeObj[0].createdBy,
+            updatedBy: item.treeObj[0].updatedBy,
+            createdAt: item.treeObj[0].createdAt,
+            updatedAt: item.treeObj[0].updatedAt,
+          };
+          acc.push(tree);
+        }
         return acc;
       }, []);
 
@@ -61,7 +56,7 @@ export class TreeService {
 
   async createTree(
     dto: CreateTreeDto,
-    createdBy: string,
+    createdBy: TObjectId,
   ): Promise<ITreeResponse> {
     try {
       const tree = { ...dto, createdBy };
@@ -87,7 +82,7 @@ export class TreeService {
     }
   }
 
-  async updateTree(dto: UpdateTreeDto, userId: string, id: string) {
+  async updateTree(dto: UpdateTreeDto, userId: TObjectId, id: TObjectId) {
     try {
       const tree = { ...dto, createdBy: userId };
       const updatedUser = await this.treeModel.findByIdAndUpdate(id, tree, {

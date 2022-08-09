@@ -1,12 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { mongoose } from '@typegoose/typegoose';
 import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
 import { lookup } from 'dns';
+import { ObjectId, Types } from 'mongoose';
 import { InjectModel } from 'nestjs-typegoose';
 import {
   ERROR_OF_PERMISSION_CREATE,
   ERROR_OF_PERMISSION_UPDATE,
   PERMISSION_NOT_FOUND,
 } from 'src/errors/error.consts';
+import { TObjectId } from 'src/types';
 import { CreatePermissionDto } from './dto/create.permission.dto';
 import { UpdatePermissionDto } from './dto/update.permission.dto';
 import { PermissionModel } from './permission.model';
@@ -19,10 +22,13 @@ export class PermissionService {
     private readonly permissionModel: ModelType<PermissionModel>,
   ) {}
 
-  async getPermissionByUserId(userId: string): Promise<PermissionModel | null> {
-    console.log('service: get permission by user id');
+  async getAllPermissionsByUserId(
+    userId: TObjectId,
+  ): Promise<PermissionModel[] | null> {
     try {
-      const permission = await this.permissionModel.findOne({ userId });
+      const permission = await this.permissionModel.find({
+        userId,
+      });
       return permission;
     } catch (e: any) {
       throw new HttpException(PERMISSION_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -30,11 +36,9 @@ export class PermissionService {
   }
 
   async getAllPermissionsWithTreeByUserId(
-    userId: string,
+    userId: TObjectId,
   ): Promise<IAllPermissionsWithTreeResponse[]> {
-    console.log('service: get all permissions with tree by user id');
     try {
-      // const permissions = await this.permissionModel.aggregate().f
       const permissions = await this.permissionModel
         .aggregate()
         .lookup({
@@ -43,7 +47,7 @@ export class PermissionService {
           foreignField: '_id',
           as: 'treeObj',
         })
-        .match({ userId: userId });
+        .match({ userId });
 
       return permissions;
     } catch (e: any) {
@@ -53,7 +57,7 @@ export class PermissionService {
 
   async createPermission(
     dto: CreatePermissionDto,
-    createdBy: string,
+    createdBy: TObjectId,
   ): Promise<DocumentType<PermissionModel>> {
     try {
       // Здесь нужна проверка, что юзер может создавать пермишены только для тех деревьев, в которых он админ
@@ -70,8 +74,8 @@ export class PermissionService {
 
   async updatePermission(
     dto: UpdatePermissionDto,
-    updatedBy: string,
-    id: string,
+    updatedBy: TObjectId,
+    id: TObjectId,
   ) {
     try {
       const permission = { ...dto, updatedBy };

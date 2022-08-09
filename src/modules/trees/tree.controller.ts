@@ -12,6 +12,8 @@ import { TreeService } from './tree.service';
 import { JWTGuard } from 'src/jwt/jwt.guard';
 import { CreateTreeDto } from './dto/create.tree.dto copy';
 import { UpdateTreeDto } from './dto/update.tree.dto';
+import { TObjectId } from 'src/types';
+import { mongoose } from '@typegoose/typegoose';
 
 @Controller('trees')
 export class TreeController {
@@ -20,8 +22,7 @@ export class TreeController {
   @Get()
   @UseGuards(JWTGuard)
   async getAllTrees(@Session() session: Record<string, any>) {
-    console.log('controller: get all trees by user id');
-    const { userId } = session;
+    const userId: TObjectId = new mongoose.Types.ObjectId(session.userId);
     return this.treeSevice.getAllTreesByUserId(userId);
   }
 
@@ -32,7 +33,7 @@ export class TreeController {
     @Session() session: Record<string, any>,
   ) {
     try {
-      const { userId } = session;
+      const userId: TObjectId = new mongoose.Types.ObjectId(session.userId);
       return this.treeSevice.createTree(dto, userId);
     } catch (error) {
       console.log(error);
@@ -42,12 +43,13 @@ export class TreeController {
   @Put(':id')
   @UseGuards(JWTGuard)
   async updateTree(
-    @Param('id') id: string,
+    @Param('id') _id: string,
     @Body() dto: UpdateTreeDto,
     @Session() session: Record<string, any>,
   ) {
     try {
-      const { userId } = session;
+      const id: TObjectId = new mongoose.Types.ObjectId(_id);
+      const userId: TObjectId = new mongoose.Types.ObjectId(session.userId);
       return this.treeSevice.updateTree(dto, userId, id);
     } catch (error) {
       console.log(error);

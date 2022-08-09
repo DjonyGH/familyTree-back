@@ -12,6 +12,9 @@ import { PermissionService } from './permission.service';
 import { JWTGuard } from 'src/jwt/jwt.guard';
 import { CreatePermissionDto } from './dto/create.permission.dto';
 import { UpdatePermissionDto } from './dto/update.permission.dto';
+import { mongoose } from '@typegoose/typegoose';
+import { ObjectId, Types } from 'mongoose';
+import { TObjectId } from 'src/types';
 
 @Controller('permissions')
 export class PermissionController {
@@ -19,10 +22,9 @@ export class PermissionController {
 
   @Get()
   @UseGuards(JWTGuard)
-  async getPermission(@Session() session: Record<string, any>) {
-    console.log('controller: get permission by user id');
-    const { userId } = session;
-    return this.permissionSevice.getPermissionByUserId(userId);
+  async getAllPermissions(@Session() session: Record<string, any>) {
+    const userId: TObjectId = new mongoose.Types.ObjectId(session.userId);
+    return this.permissionSevice.getAllPermissionsByUserId(userId);
   }
 
   @Post()
@@ -32,7 +34,7 @@ export class PermissionController {
     @Session() session: Record<string, any>,
   ) {
     try {
-      const { userId } = session;
+      const userId: TObjectId = new mongoose.Types.ObjectId(session.userId);
       return this.permissionSevice.createPermission(dto, userId);
     } catch (error) {
       console.log(error);
@@ -42,12 +44,13 @@ export class PermissionController {
   @Put(':id')
   @UseGuards(JWTGuard)
   async updatePermission(
-    @Param('id') id: string,
+    @Param('id') _id: string,
     @Body() dto: UpdatePermissionDto,
     @Session() session: Record<string, any>,
   ) {
     try {
-      const { userId } = session;
+      const id: TObjectId = new mongoose.Types.ObjectId(_id);
+      const userId: TObjectId = new mongoose.Types.ObjectId(session.userId);
       return this.permissionSevice.updatePermission(dto, userId, id);
     } catch (error) {
       console.log(error);

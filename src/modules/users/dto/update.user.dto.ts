@@ -6,7 +6,4 @@ export class UpdateUserDto {
 
   @IsEmail()
   email?: string;
-
-  @Matches(/^[0-9a-fA-F]{24}$/)
-  roleId: string;
 }
