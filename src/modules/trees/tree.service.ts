@@ -6,6 +6,7 @@ import {
   ERROR_OF_PERMISSION_CREATE,
   ERROR_OF_PERMISSION_UPDATE,
   ERROR_OF_TREE_CREATE,
+  ERROR_OF_TREE_UPDATE,
   PERMISSION_NOT_FOUND,
 } from 'src/errors/error.consts';
 import { TObjectId } from 'src/types';
@@ -82,19 +83,16 @@ export class TreeService {
     }
   }
 
-  async updateTree(dto: UpdateTreeDto, userId: TObjectId, id: TObjectId) {
+  async updateTree(dto: UpdateTreeDto, updatedBy: TObjectId, id: TObjectId) {
     try {
-      const tree = { ...dto, createdBy: userId };
-      const updatedUser = await this.treeModel.findByIdAndUpdate(id, tree, {
+      const tree = { ...dto, updatedBy };
+      const updatedTree = await this.treeModel.findByIdAndUpdate(id, tree, {
         new: true,
       });
-      if (!updatedUser) throw 'notFound';
-      return updatedUser;
+      if (!updatedTree) throw 'errorOfTreeUpdate';
+      return updatedTree;
     } catch (error) {
-      throw new HttpException(
-        ERROR_OF_PERMISSION_UPDATE,
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException(ERROR_OF_TREE_UPDATE, HttpStatus.BAD_REQUEST);
     }
   }
 
