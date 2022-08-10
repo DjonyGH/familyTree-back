@@ -60,7 +60,14 @@ export class PermissionService {
     createdBy: TObjectId,
   ): Promise<DocumentType<PermissionModel>> {
     try {
-      // Здесь нужна проверка, что юзер может создавать пермишены только для тех деревьев, в которых он админ
+      // Проверка, что пользователь, который создает право доступа является админом
+      const permissions = await this.getAllPermissionsByUserId(createdBy);
+      const permissionForCreatingTree = permissions?.find(
+        (i) => i.treeId === dto.treeId,
+      );
+      if (permissionForCreatingTree?.type !== 'admin')
+        throw 'errorOfPermissionCreate';
+
       const permission = { ...dto, createdBy };
       const createPermission = await this.permissionModel.create(permission);
       if (createPermission) return createPermission;
@@ -78,6 +85,12 @@ export class PermissionService {
     id: TObjectId,
   ) {
     try {
+      // Проверка, что пользователь, который изменяет право доступа является админом
+      const permissions = await this.getAllPermissionsByUserId(updatedBy);
+      const permissionForUpdatingTree = permissions?.find((i) => i._id === id);
+      if (permissionForUpdatingTree?.type !== 'admin')
+        throw 'errorOfPermissionUpdate';
+
       const permission = { ...dto, updatedBy };
       const updatedUser = await this.permissionModel.findByIdAndUpdate(
         id,
