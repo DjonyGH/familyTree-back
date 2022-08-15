@@ -12,7 +12,13 @@ export class UserModel extends TimeStamps {
   password: string;
 
   @prop()
-  name: string;
+  name?: string;
+
+  @prop()
+  surname?: string;
+
+  @prop()
+  patronymic?: string;
 
   @prop()
   email?: string;
